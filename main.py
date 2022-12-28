@@ -5,13 +5,13 @@ import os
 
 print("\nSIMPLE TELEGRAM WORDCLOUD GENERATOR Version 0.1.1\n"
       "Please add the exported csv to the\n"
-      "directory and name it 'result.csv\n\n\n")
+      "directory and name it 'result.csv\n\n")
 
 filename = "result.csv"
 if os.path.exists(filename):
-    print(f"{filename} exists in the current working directory.")
+    print(f"{filename} exists in the current working directory.\n")
 else:
-    print(f"{filename} does not exist in the current working directory.")
+    print(f"{filename} does not exist in the current working directory.\n")
 
 print("Reading the CSV...")
 df = pd.read_csv('result.csv', low_memory=False,
@@ -21,7 +21,7 @@ print("CSV read; Dataframe made...")
 
 
 # Replace 'NaN' and 'nan' values with the actual NaN value
-print("Replacing NaN values (some may remain)...")
+print("Replacing NaN values#...")
 df = df.replace('NaN', float('nan'))
 df = df.replace('nan', float('nan'))
 print("Replaced NaN values (some may remain)...")
@@ -34,18 +34,18 @@ print("Iterating over columns in dataset...")
 for col in ['text', 'text_1', 'text_2', 'text_3']:
     # Convert the values in the column to strings
     df[col] = df[col].astype(str)
-
     # Add the text from the column to the combined_text list
     combined_text += df[col].tolist()
 
 # Remove rows with NaN values from the dataframe
-print("Replacing NaN values (some may remain)...")
+print("Replacing NaN values#...")
 df = df.dropna()
 print("Replaced NaN values (some may remain)...")
 
 # Generate a wordcloud from the combined text, specifying the width and height of the image
 print("Generating Wordcloud...")
-wordcloud = WordCloud(width=800, height=800).generate(' '.join(combined_text))
+stopwords = ['the', 'a', 'an', 'nan']
+wordcloud = WordCloud(width=800, height=800, stopwords=stopwords).generate(' '.join(combined_text))
 
 # Display the wordcloud
 print("Displaying Wordcloud...")
