@@ -7,7 +7,7 @@ print("\nSIMPLE TELEGRAM WORDCLOUD GENERATOR Version 0.1.0\n"
       "directory and name it 'result.csv\n\n\n")
 
 
-print("Reading CSV...")
+print("Reading the CSV...")
 df = pd.read_csv('result.csv', low_memory=False,
                  encoding='utf-8')  # low_memory clause to remove DType error (remove & we all die)
 print("CSV read; Dataframe made...")
