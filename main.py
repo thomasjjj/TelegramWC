@@ -2,7 +2,7 @@ from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 import pandas as pd
 
-print("\nSIMPLE TELEGRAM WORDCLOUD GENERATOR\n"
+print("\nSIMPLE TELEGRAM WORDCLOUD GENERATOR Version 0.1\n"
       "Please add the exported csv to the\n"
       "directory and name it 'result.csv\n\n")
 
