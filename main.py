@@ -2,6 +2,7 @@ from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 import pandas as pd
 import os
+import datetime
 
 print("\nSIMPLE TELEGRAM WORDCLOUD GENERATOR Version 0.1.1\n"
       "Please add the exported csv to the\n"
@@ -44,7 +45,7 @@ print("Replaced NaN values (some may remain)...")
 
 # Generate a wordcloud from the combined text, specifying the width and height of the image
 print("Generating Wordcloud...")
-stopwords = ['the', 'a', 'an', 'nan']
+stopwords = ['the', 'a', 'an', 'nan', 'to']
 wordcloud = WordCloud(width=800, height=800, stopwords=stopwords).generate(' '.join(combined_text))
 
 # Display the wordcloud
@@ -52,4 +53,11 @@ print("Displaying Wordcloud...")
 plt.figure(figsize=(10, 10))
 plt.imshow(wordcloud, interpolation='bilinear')
 plt.axis("off")
+
+# Save the figure as a JPEG file with the current date and time appended to the filename
+filename = 'wordcloud_' + datetime.datetime.now().strftime('%Y%m%d%H%M%S') + '.jpg'
+plt.savefig(filename)
+
 plt.show()
+
+
