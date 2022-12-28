@@ -4,7 +4,7 @@ import pandas as pd
 
 print("\nSIMPLE TELEGRAM WORDCLOUD GENERATOR Version 0.1.0\n"
       "Please add the exported csv to the\n"
-      "directory and name it 'result.csv\n\n")
+      "directory and name it 'result.csv\n\n\n")
 
 print("Reading CSV...")
 df = pd.read_csv('result.csv', low_memory=False,
