@@ -1,11 +1,17 @@
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 import pandas as pd
+import os
 
 print("\nSIMPLE TELEGRAM WORDCLOUD GENERATOR Version 0.1.1\n"
       "Please add the exported csv to the\n"
       "directory and name it 'result.csv\n\n\n")
 
+filename = "result.csv"
+if os.path.exists(filename):
+    print(f"{filename} exists in the current working directory.")
+else:
+    print(f"{filename} does not exist in the current working directory.")
 
 print("Reading the CSV...")
 df = pd.read_csv('result.csv', low_memory=False,
