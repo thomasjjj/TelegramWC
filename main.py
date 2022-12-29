@@ -25,10 +25,10 @@ print("CSV read; Dataframe made...")
 
 
 # Replace 'NaN' and 'nan' values with the actual NaN value
-print("Replacing NaN values#...")
+
 df = df.replace('NaN', float('nan'))
 df = df.replace('nan', float('nan'))
-print("Replaced NaN values (some may remain)...")
+
 
 
 # Create an empty list to store the combined text from all columns
@@ -45,9 +45,9 @@ for col in ['text', 'text_1', 'text_2', 'text_3']:
 
 
 # Remove rows with NaN values from the dataframe
-print("Replacing NaN values#...")
+
 df = df.dropna()
-print("Replaced NaN values (some may remain)...")
+
 
 
 # Generate a wordcloud from the combined text, specifying the width and height of the image
