@@ -6,7 +6,7 @@ import datetime
 
 filename = "result.csv"
 
-print("\nSIMPLE TELEGRAM WORDCLOUD GENERATOR Version 0.1.6\n"
+print("\nSIMPLE TELEGRAM WORDCLOUD GENERATOR Version 0.1.7\n"
       "Please add the exported csv to the\n"
       "directory and name it 'result.csv\n\n")
 
@@ -83,7 +83,7 @@ stopwords = ['nan', 'NaN', 'a', 'about', 'above', 'across', 'after', 'afterwards
                  'which', 'while', 'whither', 'who', 'whoever', 'whole', 'whom', 'whose', 'why', 'will', 'with',
                  'within', 'without', 'would', 'yet', 'you', 'your', 'yours', 'yourself', 'yourselves', 'https', 'www']
 
-wordcloud = WordCloud(width=800, height=800, stopwords=stopwords).generate(' '.join(combined_text))
+wordcloud = WordCloud(font_path='arial.ttf', width=800, height=800, stopwords=stopwords).generate(' '.join(combined_text))
 
 
 # Display the wordcloud
