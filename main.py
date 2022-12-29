@@ -81,7 +81,9 @@ stopwords = ['nan', 'NaN', 'a', 'about', 'above', 'across', 'after', 'afterwards
                  'upon', 'us', 'very', 'via', 'was', 'we', 'well', 'were', 'what', 'whatever', 'when', 'whence',
                  'whenever', 'where', 'whereafter', 'whereas', 'whereby', 'wherein', 'whereupon', 'wherever', 'whether',
                  'which', 'while', 'whither', 'who', 'whoever', 'whole', 'whom', 'whose', 'why', 'will', 'with',
-                 'within', 'without', 'would', 'yet', 'you', 'your', 'yours', 'yourself', 'yourselves', 'https', 'www']
+                 'within', 'without', 'would', 'yet', 'you', 'your', 'yours', 'yourself', 'yourselves', 'https', 'www',
+                'и', 'в', 'на', 'что', 'это', 'как', 'но', 'он', 'она', 'они', 'не', 'так', 'его', 'ее', 'её', 'их',
+             'чей', 'кто', 'что', 'где']
 
 wordcloud = WordCloud(font_path='arial.ttf', width=800, height=800, stopwords=stopwords).generate(' '.join(combined_text))
 
