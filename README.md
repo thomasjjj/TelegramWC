@@ -5,6 +5,8 @@ TelegramWC is a simple tool that can extract the most common words in a Telegram
 - Russian/Ukrainian language support - this includes a few stopwords but can be increased by editing the code. 
 - Shows and saves the output - Allows you to have a saved image from the process.
 
+[![](https://user-images.githubusercontent.com/118008765/209982287-1b195e17-e84d-43e7-805c-d2172bd6079c.png)](https://user-images.githubusercontent.com/118008765/209982287-1b195e17-e84d-43e7-805c-d2172bd6079c.png)
+
 ## Installing
 To get started, make sure you have Python downloaded and git installed. 
 
