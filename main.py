@@ -7,8 +7,12 @@ import datetime
 filename = "result.csv"
 stopwords_filename = "stopwords.txt"
 
+# This font generally works well with Latin and Cyrillic characters. It can be adjusted to suit the language you
+# require. Just make sure the font is downloaded to your computer and call the font name.
+font = 'arial.ttf'
+
 def create_stoplist(stopwords_filename):                # Declares which wrods to exclude from wordcloud
-    with open(filename, 'r', encoding='utf-8') as f:
+    with open(stopwords_filename, 'r', encoding='utf-8') as f:
         text = f.read()
 
     words = text.split()
@@ -18,7 +22,7 @@ def create_stoplist(stopwords_filename):                # Declares which wrods t
 
     return list(stoplist)
 
-stopwords = create_stoplist('stoplist.txt')             # create the stoplist by calling the above function
+stopwords = create_stoplist(stopwords_filename)             # create the stoplist by calling the above function
 
 print("\nSIMPLE TELEGRAM WORDCLOUD GENERATOR Version 0.1.7\n"
       "Please add the exported csv to the\n"
@@ -67,7 +71,7 @@ df = df.dropna()
 # Generate a wordcloud from the combined text, specifying the width and height of the image
 print("Generating Wordcloud...")
 
-wordcloud = WordCloud(font_path='arial.ttf', width=800, height=800, stopwords=stopwords).generate(' '.join(combined_text))
+wordcloud = WordCloud(font_path=font, width=800, height=800, stopwords=stopwords).generate(' '.join(combined_text))
 
 
 # Display the wordcloud

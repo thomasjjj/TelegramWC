@@ -42,3 +42,10 @@ The following image is from a Wagner channel. Taking out all of the stopwords in
 [![](https://user-images.githubusercontent.com/118008765/209985366-d01de100-80dd-45d8-aab8-2b0031dd712f.png)](https://user-images.githubusercontent.com/118008765/209985366-d01de100-80dd-45d8-aab8-2b0031dd712f.png)
 
 
+## About fonts and languages
+The current default font has been set to *Arial.ttf*. If this font does not work for the language you are looking at, you will likely see squares and rectangles in place of characters in the wordcloud.
+
+This can be fixed by searching what fonts are compatible with the language you are looking at and you can download and call one of those fonts instead. 
+
+Note: I have not tested every language and dialect so some issues are likely to remain.
+
