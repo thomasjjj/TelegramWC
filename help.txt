@@ -1,0 +1,37 @@
+Telegram WC help:
+
+TelegramWC
+TelegramWC is a simple tool that can extract the most common words in a Telegram channel export and analyse them into a
+Word Cloud. This can be used to get an initial idea of the topics and content within the channel. It could also be used
+as part of a larger Telegram analysis tool.
+
+
+<<<Features>>>
+[]Stopword removal - this allows the most common words such as "the", "and", and "be"
+                     to be ommited from the output which increases the relevance of
+                     topic words and adjectives.
+[]Russian/Ukrainian language support - this includes a many stopwords for Russian and
+                    a few for Ukrainian but can be increased by editing the stopwords.txt
+                    file.
+[]Shows and saves the output - Allows you to have a saved image from the process.
+
+
+<<<Creating a dataset>>>
+Export a Telegram channel of your choice as JSON or CSV (Linux only). I recommend deselecting all the media and only
+keeping the text to avoid downloading extreme or illegal materials.
+
+Convert the output result.json to CSV for processing. I recommend using the SaveJSON2CSV tool which works very well
+with Telegram export data.
+
+Place the resulting CSV into the project directory. Make sure it is named "result.csv".
+
+
+<<<Editing the stopwords list>>>
+Stopwords are words that you don't want to include in the word cloud. These are normally the "filler" words that are
+used to construct a sentence but may be useless in themselves.
+
+The list of stopwords is present in the stopwords.txt file. It currently supports English, Russian, and some Ukrainian.
+More can be added depending on the language and use case.
+
+For example, if there is a channel that regularly links to YouTube but that is irrelevant, you can add "YouTube" to the
+stopwords file.

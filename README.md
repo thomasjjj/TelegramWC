@@ -19,7 +19,7 @@ Run the following to download this project and its dependencies:
 ## Creating a dataset
 1. Export a Telegram channel of your choice as JSON or CSV (*Linux only*). I recommend deselecting all the media and only keeping the text to avoid downloading extreme or illegal materials.
 2. Convert the output result.json to CSV for processing. I recommend using the [SaveJSON2CSV](http://https://gunamoi.com.au/soft/savejson2csv/index.html "SaveJSON2CSV") tool which works very well with Telegram export data.
-3. Place the resulting CSV into the project directory. Make sure it is named "result.csv".
+3. Place the resulting CSV into the project directory.
 
 ## Editing the stopwords list
 Stopwords are words that you don't want to include in the word cloud. These are normally the "filler" words that are used to construct a sentence but may be useless in themselves. Consider the following phrase:
