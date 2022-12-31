@@ -1,5 +1,10 @@
 # TelegramWC
 TelegramWC is a simple tool that can extract the most common words in a Telegram channel export and analyse them into a Word Cloud. This can be used to get an initial idea of the topics and content within the channel. It could also be used as part of a larger Telegram analysis tool.
+
+## Update version 1.0 - GUI added
+This update adds a simple GUI allowing the users much more flexibility.
+[![](https://user-images.githubusercontent.com/118008765/210123628-3505e8ee-8c67-43f4-b6f2-203b8c1a1e3a.png)](http:/https://user-images.githubusercontent.com/118008765/210123628-3505e8ee-8c67-43f4-b6f2-203b8c1a1e3a.png/)
+
 ## Features
 - Stopword removal - this allows the most common words such as "the", "and", and "be" to be ommited from the output which increases the relevance of topic words and adjectives.
 - Russian/Ukrainian language support - this includes a many stopwords for Russian and a few for Ukrainian but can be increased by editing the ```stopwords.txt``` file.
