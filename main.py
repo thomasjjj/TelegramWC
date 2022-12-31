@@ -6,6 +6,8 @@ import pandas as pd
 import os
 import datetime
 
+version = "1.0.1"
+
 # Change the CWD to the directory containing main.py
 os.chdir(os.path.dirname(__file__))
 
@@ -52,7 +54,8 @@ class GUI:
 
         self.label_info = tk.Label(self.TGWC_title_frame,
                                    text='A tool to generate wordclouds from Telegram chat exports. '
-                                   '\n Please ensure the source file is a csv file.',
+                                   '\n Please ensure the source file is a csv file.'
+                                   '\n Version {}.'.format(version), # add version number as defined at the top
                                    font=body_font)
         self.label_info.pack(padx=10)
         self.label_warning = tk.Label(self.TGWC_title_frame,
