@@ -6,6 +6,9 @@ import pandas as pd
 import os
 import datetime
 
+# Change the CWD to the directory containing main.py
+os.chdir(os.path.dirname(__file__))
+
 class GUI:
     '''
     This class is simply the GUI, if you are a beginner, don't worry too much about it.
@@ -158,7 +161,8 @@ class GUI:
         font = 'arial.ttf'
 
         # Define the name of the Stopwords file
-        stopwords_filename = "stopwords.txt"
+        stopwords_filename = os.path.join(os.getcwd(), "stopwords.txt")
+
 
         def create_stoplist(stopwords_filename):  # Declares which words to exclude from wordcloud
             with open(stopwords_filename, 'r', encoding='utf-8') as f:
