@@ -1,37 +1,70 @@
 Telegram WC help:
 
-TelegramWC
-TelegramWC is a simple tool that can extract the most common words in a Telegram channel export and analyse them into a
-Word Cloud. This can be used to get an initial idea of the topics and content within the channel. It could also be used
-as part of a larger Telegram analysis tool.
+TelegramWordCloud is a simple tool that can extract the most common words in a Telegram channel and analyse them into a Word
+Cloud. It supports loading your own CSV exports or logging in with Telethon to pull channel history directly.
 
 
 <<<Features>>>
-[]Stopword removal - this allows the most common words such as "the", "and", and "be"
-                     to be ommited from the output which increases the relevance of
-                     topic words and adjectives.
-[]Russian/Ukrainian language support - this includes a many stopwords for Russian and
-                    a few for Ukrainian but can be increased by editing the stopwords.txt
-                    file.
-[]Shows and saves the output - Allows you to have a saved image from the process.
+[] Stopword removal - filter filler words such as "the", "and", and "be" to highlight topic words.
+[] Russian/Ukrainian language support - extra stopwords can be added to stopwords.txt if required.
+[] Two source options - process an existing CSV/JSON export *or* authenticate with Telethon and download a channel on demand.
+[] Shows and saves the output - the generated word cloud can be displayed and optionally written to disk.
+[] Processing options - toggle whether the image is saved, enable download-only mode, and (for Telethon) download all posts, a date range, or the last N posts.
+[] Optional credential storage - save your API ID/hash and phone to a `.env` file so the GUI pre-populates them on next launch.
+[] Preview shortcuts - right-click the live preview to copy the image to the clipboard (Windows) or save it via “Save image as...”.
+[] Download progress - when fetching a channel via Telethon, the status bar shows processed messages vs. the estimated total (based on the latest post ID).
 
 
-<<<Creating a dataset>>>
-Export a Telegram channel of your choice as JSON or CSV (Linux only). I recommend deselecting all the media and only
-keeping the text to avoid downloading extreme or illegal materials.
+<<<Loading a CSV or JSON export>>>
+1. Choose **Load CSV export** in the GUI.
+2. Select the source type:
+   - **CSV export** – point to any Telegram CSV file (it no longer needs to live in the project folder).
+   - **Telegram JSON (result.json)** – point directly to the JSON that Telegram Desktop creates. The parser flattens mixed text/list entries automatically.
+3. Specify where you would like the image (or downloaded messages) to be saved in the *Output* section.
+4. Adjust the processing options (save image or preview only).
+5. Press **Run**.
 
-Convert the output result.json to CSV for processing. I recommend using the SaveJSON2CSV tool which works very well
-with Telegram export data.
+To create a CSV export:
+- Use Telegram Desktop to export a channel as JSON and convert it with a tool such as SaveJSON2CSV, or export as CSV directly on Linux.
+- Deselect media when exporting unless you specifically need it.
 
-Place the resulting CSV into the project directory. Make sure it is named "result.csv".
+
+<<<Downloading via Telethon>>>
+1. Choose **Download via Telethon**.
+2. Fill in your Telegram API ID and API hash (get them from https://my.telegram.org).
+3. Enter the phone number tied to that API as `+<countrycode><number>`.
+4. Click **Send login code**. Telegram will send you an SMS; enter the code in the popup (you can also press **Enter verification code** later or wait for the automatic prompt when running the download). The API hash entry is hidden for privacy.
+5. Provide the public channel username (with or without `@`) or an invite link.
+6. Choose whether to download everything, a specific date range, or only the last N posts. Decide whether you want to save the word cloud or tick **Download channel messages only** to export the raw messages.
+7. Press **Run**. If you have two-factor authentication enabled you will be prompted inside the GUI for your password.
+
+Notes:
+- The Telethon option requires `pip install telethon`.
+- Sessions are stored locally under `telegramwordcloud_session`, so you only need the SMS code once per account. The authentication status line in the Telethon section turns green when a session is active, orange when a login is required, and red when an error occurs. Use **Check authentication** at any time to refresh the status.
+- You must be able to view the channel you request (join it first if it is private).
+
+
+<<<Credential storage>>>
+- Click **Save credentials to .env** in the Telethon section to store your API ID, API hash, and phone number locally.
+- On startup TelegramWordCloud looks for `.env` in the project folder. If it exists, the GUI fills in the API/phone fields automatically, but you can still edit them before authenticating.
+- The `.env` file lives beside `main.py`. Keep it out of source control if you plan to share the project.
+
+
+<<<Processing options>>>
+- **Save wordcloud image** (checked by default) controls whether a JPEG is written to the output folder after each run. Uncheck it to only preview the cloud on screen.
+- **Download channel messages only (Telethon mode)** skips the word cloud entirely, downloads the selected channel, and saves it as a CSV for later processing.
+
+
+<<<Download-only exports>>>
+When the download-only option is enabled, TelegramWordCloud writes the retrieved messages to `telegram_messages_<channel>_<timestamp>.csv` in the output directory. The CSV includes message IDs, dates, sender IDs, and the text column so it can be fed back into the tool or used elsewhere.
 
 
 <<<Editing the stopwords list>>>
-Stopwords are words that you don't want to include in the word cloud. These are normally the "filler" words that are
-used to construct a sentence but may be useless in themselves.
+Stopwords are words that you don't want to include in the word cloud. They live in `stopwords.txt`. Add one term per line for every language or recurring token you want filtered out (e.g. "YouTube", "https", usernames, etc).
 
-The list of stopwords is present in the stopwords.txt file. It currently supports English, Russian, and some Ukrainian.
-More can be added depending on the language and use case.
 
-For example, if there is a channel that regularly links to YouTube but that is irrelevant, you can add "YouTube" to the
-stopwords file.
+<<<Troubleshooting>>>
+- "Telethon is required..." → install it via `pip install telethon`.
+- "No text messages were found" → ensure you selected the correct CSV or that the channel actually has text messages (for Telethon exports, try the download-only option to verify data is being saved).
+- "Unable to access that channel" → verify the username/link and that your account has joined the channel.
+- All status updates and errors are written to `telegramwordcloud.log` in the project folder for later review.

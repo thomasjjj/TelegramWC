@@ -1,0 +1,5 @@
+/.env
+/telegramwc.log
+/telegramwc_session.session
+/telegramwordcloud.log
+/telegramwordcloud_session.session
