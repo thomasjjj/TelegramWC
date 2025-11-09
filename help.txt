@@ -56,7 +56,7 @@ Notes:
 
 
 <<<Download-only exports>>>
-When the download-only option is enabled, TelegramWordCloud writes the retrieved messages to `telegram_messages_<channel>_<timestamp>.csv` in the output directory. The CSV includes message IDs, dates, sender IDs, and the text column so it can be fed back into the tool or used elsewhere.
+When the download-only option is enabled, TelegramWordCloud writes the retrieved messages (and any generated wordclouds) inside `exports/<channel>/<timestamp>/` under your chosen output directory. The CSV includes message IDs, dates, sender IDs, and the text column so it can be fed back into the tool or used elsewhere.
 
 
 <<<Editing the stopwords list>>>

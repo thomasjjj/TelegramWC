@@ -60,6 +60,16 @@ except ImportError:
     TelegramClient = None  # type: ignore
     ChannelPrivateError = FloodWaitError = PhoneCodeInvalidError = PhoneNumberInvalidError = SessionPasswordNeededError = UsernameInvalidError = UsernameNotOccupiedError = Exception  # type: ignore
 
+try:
+    import nltk
+    from nltk.corpus import stopwords as nltk_stopwords
+
+    nltk_available = True
+except ImportError:
+    nltk = None
+    nltk_stopwords = None
+    nltk_available = False
+
 
 class TGWCCore:
     """Logic service: environment, IO, Telethon, processing, saving."""
@@ -100,6 +110,14 @@ class TGWCCore:
         os.makedirs(sanitized, exist_ok=True)
         return sanitized
 
+    def build_export_dir(self, base_dir: str, channel_label: str) -> Path:
+        base = Path(self.ensure_dir(base_dir))
+        sanitized = self.sanitize_channel_label(channel_label)
+        timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+        export_dir = base / "exports" / sanitized / timestamp
+        export_dir.mkdir(parents=True, exist_ok=True)
+        return export_dir
+
     def load_csv(self, csv_path: str) -> pd.DataFrame:
         path = self._sanitize_path(csv_path)
         if not path:
@@ -137,20 +155,24 @@ class TGWCCore:
             raise ValueError("No messages were found inside the JSON export.")
         return pd.DataFrame(rows)
 
-    def save_messages_csv(self, df: pd.DataFrame, output_dir: str, channel_label: str) -> str:
+    def save_messages_csv(self, df: pd.DataFrame, output_dir: str, channel_label: str, filename: Optional[str] = None) -> str:
+        directory = Path(self.ensure_dir(output_dir))
         sanitized = self.sanitize_channel_label(channel_label)
-        fn = os.path.join(
-            output_dir, f'telegram_messages_{sanitized}_{datetime.datetime.now().strftime("%Y%m%d%H%M%S")}.csv'
-        )
-        df.to_csv(fn, index=False, encoding="utf-8")
-        logger.info("Channel messages saved to %s", fn)
-        return fn
+        if not filename:
+            filename = f'telegram_messages_{sanitized}_{datetime.datetime.now().strftime("%Y%m%d%H%M%S")}.csv'
+        path = directory / filename
+        df.to_csv(path, index=False, encoding="utf-8")
+        logger.info("Channel messages saved to %s", path)
+        return str(path)
 
-    def save_wordcloud_image(self, wc: WordCloud, output_dir: str) -> str:
-        fn = os.path.join(output_dir, f'wordcloud_{datetime.datetime.now().strftime("%Y%m%d%H%M%S")}.jpg')
-        wc.to_file(fn)
-        logger.info("Word cloud saved to %s", fn)
-        return fn
+    def save_wordcloud_image(self, wc: WordCloud, output_dir: str, filename: Optional[str] = None) -> str:
+        directory = Path(self.ensure_dir(output_dir))
+        if not filename:
+            filename = f'wordcloud_{datetime.datetime.now().strftime("%Y%m%d%H%M%S")}.jpg'
+        path = directory / filename
+        wc.to_file(path)
+        logger.info("Word cloud saved to %s", path)
+        return str(path)
 
     # ------- Text / stopwords -------
     def flatten_text_columns(self, df: pd.DataFrame) -> List[str]:
@@ -184,11 +206,22 @@ class TGWCCore:
         return ""
 
     def load_stopwords(self, path: str) -> Set[str]:
-        if not os.path.exists(path):
-            return set()
-        with open(path, "r", encoding="utf-8") as f:
-            words = [w.strip() for w in f.readlines()]
-        return {w for w in words if w}
+        stoplist: Set[str] = set()
+        if os.path.exists(path):
+            with open(path, "r", encoding="utf-8") as f:
+                words = [w.strip() for w in f.readlines()]
+            stoplist.update({w for w in words if w})
+        if nltk_available and nltk_stopwords is not None:
+            try:
+                nltk.data.find("corpora/stopwords")
+            except LookupError:
+                nltk.download("stopwords", quiet=True)
+            for lang in ("english", "russian"):
+                try:
+                    stoplist.update(nltk_stopwords.words(lang))
+                except LookupError:
+                    continue
+        return stoplist
 
     def build_wordcloud(self, tokens: Iterable[str], stopwords: Set[str]) -> WordCloud:
         corpus = " ".join(tokens)

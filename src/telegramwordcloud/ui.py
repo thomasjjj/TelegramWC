@@ -499,8 +499,8 @@ class App(tk.Tk):
                     date_to=date_to,
                     last_n=last_n,
                 )
-                out = self.core.ensure_dir(out_dir)
-                csv_fn = self.core.save_messages_csv(df, out, channel)
+                export_dir = self.core.build_export_dir(out_dir, channel)
+                csv_fn = self.core.save_messages_csv(df, str(export_dir), channel, filename="messages.csv")
                 self._log(f"Exported messages -> {csv_fn}")
                 if not dl_only:
                     tokens = self.core.flatten_text_columns(df)
@@ -509,7 +509,7 @@ class App(tk.Tk):
                     wc = self.core.build_wordcloud(tokens, stop)
                     self._render_cloud(wc)
                     if save_img:
-                        img_fn = self.core.save_wordcloud_image(wc, out)
+                        img_fn = self.core.save_wordcloud_image(wc, str(export_dir), filename="wordcloud.jpg")
                         self._log(f"Saved image -> {img_fn}")
                 else:
                     self._log("Download-only mode (no word cloud).")

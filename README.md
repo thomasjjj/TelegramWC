@@ -57,7 +57,7 @@ python debug_telethon_login.py --channel bbcrussian
 It uses the credentials in `.env`, prompts for the SMS/Telegram-app code (and 2FA password if enabled), and then fetches the latest message from the chosen channel. Once this script succeeds, the GUI can reuse the same session.
 
 ## Download-only exports
-When **Download channel messages only** is enabled, Telethon mode saves the retrieved messages to `telegram_messages_<channel>_<timestamp>.csv` in the selected output directory. Each CSV row includes the message ID, date, sender ID, and text so it can be re-used in TelegramWordCloud or processed elsewhere.
+When **Download channel messages only** is enabled, Telethon mode writes the retrieved messages (and any generated wordcloud images) inside an `exports/<channel>/<timestamp>/` folder under your chosen output directory. Each CSV row includes the message ID, date, sender ID, and text so it can be re-used in TelegramWordCloud or processed elsewhere.
 
 ## Creating a dataset
 1. Export a Telegram channel of your choice as JSON or CSV (*Linux only*). Deselect media unless you specifically need it.
