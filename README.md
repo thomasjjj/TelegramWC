@@ -25,7 +25,7 @@ To get started, make sure you have Python downloaded and git installed.
 
 ```bash
 git clone https://github.com/thomasjjj/TelegramWordCloud.git
-pip install wordcloud matplotlib pandas telethon
+pip install -r requirements.txt
 ```
 
 Telethon is only required if you plan to log in through the GUI; CSV processing works without it.
@@ -97,3 +97,8 @@ Note: I have not tested every language and dialect so some issues are likely to 
 
 ## Logging
 Every run writes progress updates and errors to `telegramwordcloud.log` in the project directory so you can review what happened after the fact.
+
+---
+
+**Credits**  
+GUI styling builds on the Forest ttk theme by [rdbende](https://github.com/rdbende/Forest-ttk-theme).

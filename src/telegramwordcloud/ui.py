@@ -27,15 +27,28 @@ VERSION = "1.2.0"   # UI-only bump; your logic/versioning can stay as-is
 PACKAGE_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = PACKAGE_DIR.parent.parent
 STOPWORDS_PATH = PROJECT_ROOT / "stopwords.txt"
+THEME_PATH = PROJECT_ROOT / "themes" / "forest-light" / "forest-light.tcl"
+
+
+class CancelledError(Exception):
+    """Raised when the user cancels a running job."""
 
 class App(tk.Tk):
     def __init__(self):
         super().__init__()
+        if THEME_PATH.exists():
+            try:
+                self.tk.call("source", str(THEME_PATH))
+                ttk.Style().theme_use("forest-light")
+            except tk.TclError as exc:
+                logger.warning("Unable to load Forest theme (%s); falling back to default.", exc)
         self.title(APP_TITLE)
         self.minsize(980, 640)
         self.core = TGWCCore()
         self.log_queue = queue.Queue()
         self.last_wordcloud_image = None
+        self.cancel_event = threading.Event()
+        self.current_thread = None
         self._build_styles()
         self._build_layout()
         self._load_env()
@@ -98,9 +111,12 @@ class App(tk.Tk):
         # Top command bar
         cmd = ttk.Frame(self, padding=(8, 0))
         cmd.pack(side=tk.TOP, fill=tk.X)
-        ttk.Button(cmd, text="Run", command=self.on_run, width=12).pack(side=tk.LEFT)
+        self.run_button = ttk.Button(cmd, text="Run", command=self.on_run, width=12)
+        self.run_button.pack(side=tk.LEFT)
         ttk.Button(cmd, text="Help", command=self.on_help).pack(side=tk.LEFT, padx=(8, 0))
         ttk.Button(cmd, text="Edit stopwords", command=self.on_edit_stopwords).pack(side=tk.LEFT, padx=(8, 0))
+        self.cancel_button = ttk.Button(cmd, text="Cancel", command=self.on_cancel, state="disabled")
+        self.cancel_button.pack(side=tk.LEFT, padx=(8, 0))
 
     def _build_csv_tab(self):
         tab = ttk.Frame(self.nb, padding=8)
@@ -275,6 +291,9 @@ class App(tk.Tk):
             win32clipboard.SetClipboardData(win32clipboard.CF_DIB, data)
             win32clipboard.CloseClipboard()
             self._log("Copied preview image to clipboard.")
+        except CancelledError:
+            self._set_status("Cancelled.")
+            self._log("Operation cancelled by user.")
         except Exception as exc:
             win32clipboard.CloseClipboard()
             messagebox.showerror("TelegramWordCloud", f"Unable to copy image to clipboard: {exc}")
@@ -323,6 +342,14 @@ class App(tk.Tk):
         state_last = "normal" if mode == "last" else "disabled"
         for child in self.last_frame.winfo_children():
             child.configure(state=state_last)
+
+    def on_cancel(self):
+        if not self.current_thread or not self.current_thread.is_alive():
+            return
+        self.cancel_event.set()
+        self.cancel_button.config(state="disabled")
+        self._set_status("Cancelling...")
+        self._log("Cancellation requested...")
 
     def _load_env(self):
         creds = self.core.read_env_credentials()
@@ -420,8 +447,15 @@ class App(tk.Tk):
         self.progress["value"] = 0
         self.progress.start(10)
         self.status.config(text="Working...")
+        if self.current_thread and self.current_thread.is_alive():
+            messagebox.showinfo("TelegramWordCloud", "A job is already running. Cancel it before starting another.")
+            return
+        self.cancel_event.clear()
+        self.run_button.config(state="disabled")
+        self.cancel_button.config(state="normal")
         t = threading.Thread(target=self._worker, args=(args_tuple,), daemon=True)
         t.start()
+        self.current_thread = t
 
     def _call_on_main_thread(self, func, *args, **kwargs):
         if threading.current_thread() is threading.main_thread():
@@ -453,15 +487,18 @@ class App(tk.Tk):
                 else:
                     self._log("Reading CSV...")
                     df = self.core.load_csv(source_path)
+                self._raise_if_cancelled()
                 tokens = self.core.flatten_text_columns(df)
                 if not tokens:
                     raise ValueError("No text messages were found to process.")
                 stop = self.core.load_stopwords(str(STOPWORDS_PATH))
+                self._raise_if_cancelled()
                 self._log("Generating word cloud...")
                 wc = self.core.build_wordcloud(tokens, stop)
                 self._render_cloud(wc)
                 if save_img:
                     out = self.core.ensure_dir(out_dir)
+                    self._raise_if_cancelled()
                     fn = self.core.save_wordcloud_image(wc, out)
                     self._log(f"Saved image -> {fn}")
                 else:
@@ -483,6 +520,8 @@ class App(tk.Tk):
                     return self._call_on_main_thread(simpledialog.askstring, "Telegram", prompt, **kwargs)
 
                 def progress_callback(done, total):
+                    if self.cancel_event.is_set():
+                        raise CancelledError()
                     self._update_download_progress(done, total)
                 date_from = date_to = None
                 last_n = None
@@ -494,6 +533,7 @@ class App(tk.Tk):
                         last_n = int(scope_last)
                     except ValueError:
                         raise ValueError("Enter a numeric value for last N posts.")
+                self._raise_if_cancelled()
                 self._log("Downloading channel messages...")
                 df = self.core.download_channel(
                     aid_int,
@@ -506,16 +546,19 @@ class App(tk.Tk):
                     date_to=date_to,
                     last_n=last_n,
                 )
+                self._raise_if_cancelled()
                 export_dir = self.core.build_export_dir(out_dir, channel)
                 csv_fn = self.core.save_messages_csv(df, str(export_dir), channel, filename="messages.csv")
                 self._log(f"Exported messages -> {csv_fn}")
                 if not dl_only:
                     tokens = self.core.flatten_text_columns(df)
                     stop = self.core.load_stopwords(str(STOPWORDS_PATH))
+                    self._raise_if_cancelled()
                     self._log("Generating word cloud...")
                     wc = self.core.build_wordcloud(tokens, stop)
                     self._render_cloud(wc)
                     if save_img:
+                        self._raise_if_cancelled()
                         img_fn = self.core.save_wordcloud_image(wc, str(export_dir), filename="wordcloud.jpg")
                         self._log(f"Saved image -> {img_fn}")
                 else:
@@ -531,6 +574,7 @@ class App(tk.Tk):
         finally:
             loop.close()
             self.after(0, self._reset_progress_bar)
+            self.after(0, self._finalize_worker)
 
     # ---------- UI helpers ----------
     def _render_cloud(self, wc):
@@ -563,6 +607,15 @@ class App(tk.Tk):
         self.progress.stop()
         self.progress.config(mode="indeterminate")
         self.progress["value"] = 0
+
+    def _finalize_worker(self):
+        self.current_thread = None
+        self.run_button.config(state="normal")
+        self.cancel_button.config(state="disabled")
+
+    def _raise_if_cancelled(self):
+        if self.cancel_event.is_set():
+            raise CancelledError()
 
     def _parse_date(self, value: str):
         value = value.strip()
