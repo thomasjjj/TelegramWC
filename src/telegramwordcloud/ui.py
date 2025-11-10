@@ -105,6 +105,7 @@ class App(tk.Tk):
     def _build_csv_tab(self):
         tab = ttk.Frame(self.nb, padding=8)
         self.nb.add(tab, text="CSV/JSON")
+        self.csv_tab = tab
 
         # Inputs
         frm = ttk.LabelFrame(tab, text="Local export")
@@ -379,8 +380,9 @@ class App(tk.Tk):
         ttk.Button(editor, text="Save", command=save).pack(pady=6)
 
     def on_run(self):
-        tab = self.nb.tab(self.nb.select(), "text")
-        if tab == "CSV":
+        selected_id = self.nb.select()
+        tab_text = self.nb.tab(selected_id, "text")
+        if tab_text == "CSV/JSON" or selected_id == str(getattr(self, "csv_tab", "")):
             if self.csv_mode.get() == "json":
                 source = self.json_path.get().strip()
                 if not source:
@@ -467,7 +469,12 @@ class App(tk.Tk):
 
             elif mode == "telethon":
                 _, aid, ah, ph, channel, out_dir, dl_only, save_img, scope_mode, scope_from, scope_to, scope_last = args
-                aid_int = int(aid)
+                if not (aid and ah and ph):
+                    raise ValueError("Enter API ID, API hash, and phone number before running Telethon downloads.")
+                try:
+                    aid_int = int(aid)
+                except ValueError as exc:
+                    raise ValueError("Enter a numeric API ID.") from exc
                 def code_provider(two_factor=False):
                     prompt = "Enter your Telegram 2FA password:" if two_factor else "Enter the verification code Telegram sent to your phone:"
                     kwargs = {"parent": self}

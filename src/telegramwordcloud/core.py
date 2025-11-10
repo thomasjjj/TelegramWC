@@ -227,7 +227,11 @@ class TGWCCore:
         corpus = " ".join(tokens)
         if not corpus.strip():
             raise ValueError("Not enough text to build a word cloud.")
-        return WordCloud(font_path=FONT_FAMILY, width=1000, height=700, stopwords=stopwords).generate(corpus)
+        font_path = FONT_FAMILY
+        if font_path and not Path(font_path).exists():
+            logger.warning("Font %s not found; falling back to default font.", font_path)
+            font_path = None
+        return WordCloud(font_path=font_path, width=1000, height=700, stopwords=stopwords).generate(corpus)
 
     # ------- Telethon -------
     def download_channel(
